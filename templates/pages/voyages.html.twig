@@ -3,9 +3,34 @@
 {% extends "basefront.html.twig" %}
 
 {% block body %}
-    {% for visite in visites %}
-        {{ visite.ville }}
-     {% endfor %}
-<h1>Page Voyages</h1>
-<a href="{{  path('accueil') }}">accueil</a>
+    <table class="table table_striped">
+        <thead>
+            <tr>
+                <th class="text-left" scope="col">Ville</th>
+                <th class="text-left" scope="col">Pays</th>
+                <th class="text-left" scope="col">Note</th>
+                <th class="text-left" scope="col">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visite in visites %}
+                <tr>
+                    <td>
+                        <h5 class="text-primary">
+                            <a href="#">{{  visite.ville }}</a>
+                        </h5>
+                    </td>
+                    <td>
+                        {{ visite.pays }}
+                    </td>
+                    <td clas="text-right">
+                        <strong>{{  visite.note }}/20</strong>
+                    </td>
+                    <td clas="text-center">
+                        {{  visite.datecreationstring }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
