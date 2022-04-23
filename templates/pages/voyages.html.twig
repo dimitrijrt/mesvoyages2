@@ -6,7 +6,12 @@
     <table class="table table_striped">
         <thead>
             <tr>
-                <th class="text-left" scope="col">Ville</th>
+                <th class="text-left" scope="col">
+                    Ville
+                    <a href="#" class="btn btn-primary btn-sm active" role="button" arie-pressed="true"><</a>
+                    <a href="#" class="btn btn-primary btn-sm active" role="button" arie-pressed="true">></a>                
+                </th>
+                    
                 <th class="text-left" scope="col">Pays</th>
                 <th class="text-left" scope="col">Note</th>
                 <th class="text-left" scope="col">Date</th>
@@ -24,7 +29,17 @@
                         {{ visite.pays }}
                     </td>
                     <td clas="text-right">
-                        <strong>{{  visite.note }}/20</strong>
+                        <strong>
+                            {%  if visite.note<10 %}
+                                <div class="text-danger">
+                                    {{  visite.note }}/20
+                                </div>
+                            {% else %}
+                                <div class="text-succes">
+                                    {{  visite.note }}/20
+                                </div>
+                            {% endif %}
+                        </strong>                                            
                     </td>
                     <td clas="text-center">
                         {{  visite.datecreationstring }}
