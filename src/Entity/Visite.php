@@ -3,12 +3,20 @@
 namespace App\Entity;
 
 use App\Repository\VisiteRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 
 /**
- * @ORM\Entity(repositoryClass=VisiteRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\VisiteRepository")
+ * @Vich\Uploadable
  */
 class Visite
 {
@@ -31,6 +39,7 @@ class Visite
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Assert\LessThanOrEqual("now")
      */
     private $datecreation;
 
@@ -58,6 +67,25 @@ class Visite
      * @ORM\ManyToMany(targetEntity=Environnement::class)
      */
     private $environnements;
+    
+    /**
+     *@Vich\UploadableField(mapping="visites",fileNameProperty="imageName")
+     * 
+     * @var File|null
+     */
+    private $imageFile;
+    
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * 
+     * @var string|null
+     */
+    private $imageName;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $updated_at;
 
     public function __construct()
     {
@@ -93,12 +121,16 @@ class Visite
         return $this;
     }
 
-    public function getDatecreationString(): string
+    public function getDatecreation(): ?DateTimeInterface
     {
-        return $this->datecreation->format('d/m/Y');
+        return $this->datecreation;
     }
 
-    public function setDatecreation(?\DateTimeInterface $datecreation): self
+    public function getDatecreationString(): string {
+        return $this->datecreation->format('d/m/Y');     
+    }
+
+    public function setDatecreation(?DateTimeInterface $datecreation): self
     {
         $this->datecreation = $datecreation;
 
@@ -176,4 +208,39 @@ class Visite
 
         return $this;
     }
+    
+    function getImageFile(): ?File {
+        return $this->imageFile;
+    }
+
+    function getImageName(): ?string {
+        return $this->imageName;
+    }
+
+    function setImageFile(File $imageFile): self {
+        $this->imageFile = $imageFile;
+        if ($this->imageFile instanceof UploadedFile) {
+            $this->updated_at = new \DateTime('now');
+        }
+        return $this;
+    }
+
+    function setImageName(?string $imageName): self {
+        $this->imageName = $imageName;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updated_at): self
+    {
+        $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+
 }

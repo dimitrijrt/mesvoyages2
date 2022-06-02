@@ -1,101 +1,78 @@
 <?php
-
-namespace  App\Controller\admin;
+namespace App\Controller\admin;
 
 use App\Entity\Visite;
 use App\Form\VisiteType;
 use App\Repository\VisiteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  * Description of AdminVoyagesController
  *
- * @author DIM
+ * @author 
  */
-class AdminVoyagesController extends AbstractController {
-    
-    
+class AdminVoyagesController extends AbstractController{
+
     /**
-     * @Route ("/admin", name="admin.voyages")
-     * @return Response
-     */
-    public function index() : Response{
-        $visites = $this->repository->findAllOrderBy('datecreation','DESC');
-        return $this->render("admin/admin.voyages.html.twig", ['visites' => $visites
-        ]);
-    }
-    
-     /**
-     * 
+     *
      * @var VisiteRepository
      */
     private $repository;
-    
-     /**
-     * @param VisiteRepository $repository
-     */
-   
+    private const ADMINVOYAGES = "admin.voyages";
+
     /**
      *
      * @var EntityManagerInterface
      */
     private $om;
+    
     /**
+     * 
      * @param VisiteRepository $repository
      * @param EntityManagerInterface $om
      */
     function __construct(VisiteRepository $repository, EntityManagerInterface $om) {
-        $this->repository= $repository;
+        $this->repository = $repository;
         $this->om = $om;
     }
-    
+
     /**
-     * @Route ("/admin/suppr/{id}", name="admin.voyage.suppr")
+     * @Route("/admin/suppr/{id}", name="admin.voyage.suppr")
      * @param Visite $visite
      * @return Response
      */
-    public function suppr(Visite $visite): Response {
+    public function suppr(Visite $visite): Response{
         $this->om->remove($visite);
         $this->om->flush();
-        return $this->redirectToRoute('admin.voyages');
-        
-    }
+        return $this->redirectToRoute(self::ADMINVOYAGES);
+    }    
     
     /**
-     * @Route ("/admin/edit/{id}", name="admin.voyage.edit")
+     * @Route("/admin/edit/{id}", name="admin.voyage.edit")
      * @param Visite $visite
      * @param Request $request
      * @return Response
      */
-    public function edit(Visite $visite, Request $request): Response {
+    public function edit(Visite $visite, Request $request): Response{
         $formVisite = $this->createForm(VisiteType::class, $visite);
         
         $formVisite->handleRequest($request);
-        if($formVisite->isSubmitted() && $formVisite->isValid())
+        if($formVisite->isSubmitted() && $formVisite->isValid()){
             $this->om->flush();
-            return $this->redirectToRoute('admin.voyages');
-            
-        
+            return $this->redirectToRoute(self::ADMINVOYAGES);
+        }
         
         return $this->render("admin/admin.voyage.edit.html.twig", [
             'visite' => $visite,
             'formvisite' => $formVisite->createView()
-    ]);
-        
-     
-    
-    }   
-    
-   /**
+        ]);
+    }
+
+    /**
      * @Route("/admin/ajout", name="admin.voyage.ajout")
      * @param Request $request
      * @return Response
@@ -116,11 +93,15 @@ class AdminVoyagesController extends AbstractController {
             'formvisite' => $formVisite->createView()
         ]);
     }
-            
-            
-        
-            
-    
+    /**
+     * @Route("/admin", name="admin.voyages")
+     * @return Response
+     */
+    public function index(): Response {
+        $visites = $this->repository->findAllOrderBy('datecreation', 'DESC');
+        return $this->render("admin/admin.voyages.html.twig", [
+            'visites' => $visites
+        ]);
+    }    
     
 }
-
